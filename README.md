@@ -1,5 +1,7 @@
 # Michelin Star Restaurant Guide Dashboard
 
+<div align="right"><img alt="plotly" height="31" src="https://images.prismic.io/plotly-marketing-website-2/ce1a4076-4fd2-4040-b99a-aad02fcc2fbb_new-logo-email.png" width="110"></div>
+
 - [Michelin Star Restaurant Guide Dashboard](#michelin-star-restaurant-guide-dashboard)
   - [Plotly Autumn App Challenge 2024](#plotly-autumn-app-challenge-2024)
   - [Project Overview](#project-overview)
@@ -17,6 +19,8 @@
 ## Plotly Autumn App Challenge 2024
 
 This project is an entry for the Plotly Autumn App Challenge 2024, focusing on creating a Dash app to visualize and analyze data from the Michelin Star Restaurant Guide.
+
+<div align="center"> <img alt="Michelin Star Guide" src="https://images.prismic.io/plotly-marketing-website-2/ZunohrVsGrYSve84_DC16_MichelinStars.png?auto=format,compress" width="400"> </div>
 
 ## Project Overview
 
