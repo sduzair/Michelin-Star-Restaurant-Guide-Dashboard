@@ -83,7 +83,7 @@ This project is an entry for the Plotly Autumn App Challenge and is not open for
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE.txt) file for details.
 
 ## Acknowledgments
 
