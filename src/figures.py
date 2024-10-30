@@ -1,3 +1,4 @@
+from typing import List
 import plotly.express as px
 from pandas import DataFrame
 
@@ -10,9 +11,13 @@ color_map = {
 }
 
 
-def awards_by_city_bar(df: DataFrame, city: str):
+def awards_by_city_bar(df: DataFrame, city: str, awards: List[str] = []):
     # Filter the dataframe for the specified city
     df_city = df[df["Location_city"] == city]
+
+    # Apply awards filter only if the awards list is not empty
+    if awards:
+        df_city = df_city[df_city["Award"].isin(awards)]
     # Group by Award and count the occurrences
     df_grouped = df_city.groupby("Award").size().reset_index(name="Count")
     # Sort the dataframe by Count in descending order
@@ -33,8 +38,13 @@ def awards_by_city_bar(df: DataFrame, city: str):
     return fig
 
 
-def award_by_city_scattermap(df: DataFrame, city: str):
+def award_by_city_scattermap(df: DataFrame, city: str, awards: List[str] = []):
+    # Filter the dataframe for the specified city
     city_data = df[df["Location_city"] == city]
+
+    # Apply awards filter only if the awards list is not empty
+    if awards:
+        city_data = city_data[city_data["Award"].isin(awards)]
     # country = city_data["Location_country"].iloc[0]
 
     fig = px.scatter_map(
