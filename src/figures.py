@@ -1,4 +1,5 @@
 from typing import List
+
 import plotly.express as px
 from pandas import DataFrame
 
@@ -71,3 +72,20 @@ def award_by_city_scattermap(df: DataFrame, city: str, awards: List[str] = []):
     )
 
     return fig
+
+
+def get_top_5_cuisines(df: DataFrame) -> DataFrame:
+    # Step 1: Group by city and facilities/services, then count
+    grouped = df.groupby(["Location_city", "Cuisine"]).size().reset_index(name="count")
+
+    # Step 2: Sort the values within each city group by count in descending order
+    sorted_grouped = grouped.sort_values(
+        ["Location_city", "count"], ascending=[True, False]
+    )
+
+    # Step 3: Select the top 5 facilities/services for each city
+    top_5 = sorted_grouped.groupby("Location_city").head(5)
+
+    # Step 4: Reset the index for cleaner output
+    result = top_5.reset_index(drop=True)
+    return result

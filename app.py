@@ -1,10 +1,14 @@
 import dash_bootstrap_components as dbc
 import numpy as np
-from dash import Dash, Input, Output, State, callback, dcc, html
+from dash import Dash, Input, Output, State, callback, dcc, html, dash_table
 from dotenv import load_dotenv
 
-from src.data_cleaning import CSV_PATH, clean_data, read_csv
-from src.figures import award_by_city_scattermap, awards_by_city_bar
+from src.data_cleaning import CSV_PATH, clean_data, get_exploded_cuisine_df, read_csv
+from src.figures import (
+    award_by_city_scattermap,
+    awards_by_city_bar,
+    get_top_5_cuisines,
+)
 
 load_dotenv()
 
@@ -39,6 +43,13 @@ app.layout = html.Div(
                 ),
             ],
             class_name="g-0",
+        ),
+        dbc.Row(
+            dbc.Col(
+                dash_table.DataTable(
+                    id="top_5_cuisines_table",
+                )
+            ),
         ),
         dbc.Row(
             dbc.Col(
@@ -87,6 +98,22 @@ def update_graph_for_award(awards, city):
     fig_2 = awards_by_city_bar(df_clean, city, awards)
 
     return fig_1, fig_2
+
+
+df_top_5_cuisines = get_top_5_cuisines(get_exploded_cuisine_df(df_clean))
+
+
+@callback(
+    Output(component_id="top_5_cuisines_table", component_property="data"),
+    Output(component_id="top_5_cuisines_table", component_property="columns"),
+    Input(component_id="city_dropdown", component_property="value"),
+)
+def update_top_5_cuisines_table(city: str):
+    df_top_5_for_city = df_top_5_cuisines[df_top_5_cuisines["Location_city"] == city]
+    return (
+        df_top_5_for_city.to_dict("records"),
+        [{"name": i, "id": i} for i in df_top_5_for_city.columns],
+    )
 
 
 if __name__ == "__main__":

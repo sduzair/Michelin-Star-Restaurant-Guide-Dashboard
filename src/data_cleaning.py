@@ -46,32 +46,24 @@ def select_unique_location_city_where_location_country_is_missing(
     return df_temp["Location_city"].unique()
 
 
-def get_facilitiesandservices_df(df: DataFrame):
-    # Create a new DataFrame with Name, Address, and all facilities and services in one column
-    df_facilitiesandservices = df[["Name", "Address", "FacilitiesAndServices"]]
-    df_facilitiesandservices["FacilitiesAndServices"] = df_facilitiesandservices[
-        "FacilitiesAndServices"
-    ].str.split(",")
-    df_facilitiesandservices = df_facilitiesandservices.explode("FacilitiesAndServices")
-    df_facilitiesandservices["FacilitiesAndServices"] = df_facilitiesandservices[
-        "FacilitiesAndServices"
-    ].str.strip()
+def get_exploded_facilitiesandservices_df(df: DataFrame):
+    df["FacilitiesAndServices"] = df["FacilitiesAndServices"].str.split(",")
+    df = df.explode("FacilitiesAndServices")
+    df["FacilitiesAndServices"] = df["FacilitiesAndServices"].str.strip()
     # Reset the index
-    # df_facilitiesandservices = df_facilitiesandservices.reset_index(drop=True)
+    # df = df.reset_index(drop=True)
 
-    return df_facilitiesandservices
+    return df
 
 
-def get_cuisine_df(df: DataFrame):
-    # Create a new DataFrame with Name, Address, and all cuisines in one column
-    df_cuisine = df[["Name", "Address", "Cuisine"]]
-    df_cuisine["Cuisine"] = df_cuisine["Cuisine"].str.split(",")
-    df_cuisine = df_cuisine.explode("Cuisine")
-    df_cuisine["Cuisine"] = df_cuisine["Cuisine"].str.strip()
+def get_exploded_cuisine_df(df: DataFrame):
+    df["Cuisine"] = df["Cuisine"].str.split(",")
+    df = df.explode("Cuisine")
+    df["Cuisine"] = df["Cuisine"].str.strip()
     # Reset the index
-    # df_cuisine = df_cuisine.reset_index(drop=True)
+    # df = df.reset_index(drop=True)
 
-    return df_cuisine
+    return df
 
 
 CSV_PATH = "data/michelin_by_Jerry_Ng.csv"
