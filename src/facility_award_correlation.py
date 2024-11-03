@@ -31,15 +31,17 @@ def clean_and_encode_facilities(df: pd.DataFrame) -> pd.DataFrame:
     return result_df
 
 
+award_ranking = {
+    "Selected Restaurants": 1,
+    "Bib Gourmand": 2,
+    "1 Star": 3,
+    "2 Stars": 4,
+    "3 Stars": 5,
+}
+
+
 def encode_award(df: pd.DataFrame):
-    award_order = {
-        "Selected Restaurants": 1,
-        "Bib Gourmand": 2,
-        "1 Star": 3,
-        "2 Stars": 4,
-        "3 Stars": 5,
-    }
-    df["Award_encoded"] = df["Award"].map(award_order)
+    df["Award_encoded"] = df["Award"].map(award_ranking)
     return df
 
 

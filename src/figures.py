@@ -1,11 +1,12 @@
 from typing import List
-from plotly.graph_objs._figure import Figure
 
 import plotly.express as px
-from pandas import DataFrame
 import plotly.graph_objects as go
+from pandas import DataFrame
+from plotly.graph_objs._figure import Figure
 
 from src.facility_award_correlation import (
+    award_ranking,
     calculate_award_facility_correlations,
 )
 
@@ -25,10 +26,16 @@ def awards_by_city_bar(df: DataFrame, city: str, awards: List[str] = []):
     # Apply awards filter only if the awards list is not empty
     if awards:
         df_city = df_city[df_city["Award"].isin(awards)]
+
     # Group by Award and count the occurrences
     df_grouped = df_city.groupby("Award").size().reset_index(name="Count")
-    # Sort the dataframe by Count in descending order
-    df_grouped = df_grouped.sort_values("Count", ascending=False)
+
+    # Map the custom ranking to the 'Award' column
+    df_grouped["Rank"] = df_grouped["Award"].map(award_ranking)
+
+    # Sort the dataframe by Rank in descending order
+    df_grouped = df_grouped.sort_values("Rank", ascending=True)
+
     fig = px.bar(
         df_grouped,
         x="Award",
@@ -37,11 +44,13 @@ def awards_by_city_bar(df: DataFrame, city: str, awards: List[str] = []):
         color_discrete_map=color_map,
         labels={"Award": "Michelin Recognition", "Count": "Number of Restaurants"},
     )
+
     # Update the layout to position the legend
     fig.update_layout(
         legend=dict(yanchor="top", y=0.98, xanchor="right", x=0.99),
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
     )
+
     return fig
 
 
@@ -69,6 +78,7 @@ def award_by_city_scattermap(df: DataFrame, city: str, awards: List[str] = []):
             "GreenStar": True,
         },
         zoom=10,
+        map_style="carto-voyager",  # Light map style
     )
     # Update the layout to position the legend
     fig.update_layout(
@@ -80,7 +90,7 @@ def award_by_city_scattermap(df: DataFrame, city: str, awards: List[str] = []):
     return fig
 
 
-def get_top_5_cuisines(df: DataFrame) -> DataFrame:
+def get_top_cuisines(df: DataFrame) -> DataFrame:
     # Step 1: Group by city and facilities/services, then count
     grouped = df.groupby(["Location_city", "Cuisine"]).size().reset_index(name="count")
 
@@ -89,15 +99,17 @@ def get_top_5_cuisines(df: DataFrame) -> DataFrame:
         ["Location_city", "count"], ascending=[True, False]
     )
 
-    # Step 3: Select the top 5 facilities/services for each city
-    top_5 = sorted_grouped.groupby("Location_city").head(5)
+    # # Step 3: Select the top 5 facilities/services for each city
+    # top_5 = sorted_grouped.groupby("Location_city").head(5)
 
     # Step 4: Reset the index for cleaner output
-    result = top_5.reset_index(drop=True)
+    result = sorted_grouped.reset_index(drop=True)
     return result
 
 
-def create_correlation_heatmap(df_encoded: DataFrame, city_name: str) -> Figure:
+def create_correlation_heatmap(
+    df_encoded: DataFrame, city_name: str, theme: str
+) -> Figure:
     correlation_df = calculate_award_facility_correlations(df_encoded, city_name)
 
     # Remove NA rows
@@ -108,6 +120,12 @@ def create_correlation_heatmap(df_encoded: DataFrame, city_name: str) -> Figure:
     correlations = correlation_df["correlation"]
     # p_values = correlation_df["p_value"]
 
+    # Choose colorscale based on theme
+    if theme == "dark":
+        colorscale = "Viridis"  # A good choice for dark themes
+    else:
+        colorscale = "RdBu_r"  # Original colorscale for light themes
+
     # Create heatmap
     fig = go.Figure(
         data=go.Heatmap(
@@ -116,7 +134,7 @@ def create_correlation_heatmap(df_encoded: DataFrame, city_name: str) -> Figure:
                 facility.replace("FacilitiesAndServices_", "")
                 for facility in facilities
             ],
-            colorscale="RdBu_r",
+            colorscale=colorscale,
             zmin=-1,
             zmax=1,
         )
