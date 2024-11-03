@@ -1,7 +1,13 @@
 from typing import List
+from plotly.graph_objs._figure import Figure
 
 import plotly.express as px
 from pandas import DataFrame
+import plotly.graph_objects as go
+
+from src.facility_award_correlation import (
+    calculate_award_facility_correlations,
+)
 
 color_map = {
     "3 Stars": "#FFD700",  # Gold
@@ -89,3 +95,40 @@ def get_top_5_cuisines(df: DataFrame) -> DataFrame:
     # Step 4: Reset the index for cleaner output
     result = top_5.reset_index(drop=True)
     return result
+
+
+def create_correlation_heatmap(df_encoded: DataFrame, city_name: str) -> Figure:
+    correlation_df = calculate_award_facility_correlations(df_encoded, city_name)
+
+    # Remove NA rows
+    correlation_df = correlation_df.dropna()
+
+    # Prepare data for heatmap
+    facilities = correlation_df.index
+    correlations = correlation_df["correlation"]
+    # p_values = correlation_df["p_value"]
+
+    # Create heatmap
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=[correlations],
+            x=[
+                facility.replace("FacilitiesAndServices_", "")
+                for facility in facilities
+            ],
+            colorscale="RdBu_r",
+            zmin=-1,
+            zmax=1,
+        )
+    )
+
+    # Update layout
+    fig.update_layout(
+        title=f"Correlation between Facilities/Services and Michelin Award in {city_name}",
+        xaxis_title="Facilities and Services",
+        yaxis_title="Michelin Award Correlation",
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        yaxis=dict(showticklabels=False, showgrid=False, zeroline=False, visible=True),
+    )
+
+    return fig

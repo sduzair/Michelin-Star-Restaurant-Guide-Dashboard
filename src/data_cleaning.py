@@ -46,7 +46,7 @@ def select_unique_location_city_where_location_country_is_missing(
     return df_temp["Location_city"].unique()
 
 
-def get_exploded_facilitiesandservices_df(df: DataFrame):
+def get_exploded_fns_df(df: DataFrame):
     df["FacilitiesAndServices"] = df["FacilitiesAndServices"].str.split(",")
     df = df.explode("FacilitiesAndServices")
     df["FacilitiesAndServices"] = df["FacilitiesAndServices"].str.strip()

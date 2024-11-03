@@ -3,10 +3,12 @@ import numpy as np
 from dash import Dash, Input, Output, State, callback, dcc, html, dash_table
 from dotenv import load_dotenv
 
+from src.facility_award_correlation import clean_and_encode_facilities, encode_award
 from src.data_cleaning import CSV_PATH, clean_data, get_exploded_cuisine_df, read_csv
 from src.figures import (
     award_by_city_scattermap,
     awards_by_city_bar,
+    create_correlation_heatmap,
     get_top_5_cuisines,
 )
 
@@ -45,11 +47,18 @@ app.layout = html.Div(
             class_name="g-0",
         ),
         dbc.Row(
-            dbc.Col(
-                dash_table.DataTable(
-                    id="top_5_cuisines_table",
-                )
-            ),
+            [
+                dbc.Col(
+                    dcc.Graph(figure={}, id="facility_award_correlation_heatmap"),
+                    class_name="col-md-9",
+                ),
+                dbc.Col(
+                    dash_table.DataTable(
+                        id="top_5_cuisines_table",
+                    ),
+                    class_name="col-md-3",
+                ),
+            ]
         ),
         dbc.Row(
             dbc.Col(
@@ -114,6 +123,20 @@ def update_top_5_cuisines_table(city: str):
         df_top_5_for_city.to_dict("records"),
         [{"name": i, "id": i} for i in df_top_5_for_city.columns],
     )
+
+
+df_encoded_awards_and_fns = clean_and_encode_facilities(encode_award(df_clean.copy()))
+
+
+@callback(
+    Output(
+        component_id="facility_award_correlation_heatmap", component_property="figure"
+    ),
+    Input(component_id="city_dropdown", component_property="value"),
+)
+def update_facility_award_correlation_heatmap(city_name: str):
+    fig = create_correlation_heatmap(df_encoded_awards_and_fns, city_name)
+    return fig
 
 
 if __name__ == "__main__":
