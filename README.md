@@ -1,5 +1,7 @@
 # Michelin Star Restaurant Guide Dashboard
 
+[![Create and publish a Docker image](https://github.com/sduzair/michelin-star-restaurant-guide-dashboard/actions/workflows/deploy.yml/badge.svg)](https://github.com/sduzair/michelin-star-restaurant-guide-dashboard/actions/workflows/deploy.yml)
+
 <div align="right"><img alt="plotly" height="31" src="https://images.prismic.io/plotly-marketing-website-2/ce1a4076-4fd2-4040-b99a-aad02fcc2fbb_new-logo-email.png" width="110"></div>
 
 - [Michelin Star Restaurant Guide Dashboard](#michelin-star-restaurant-guide-dashboard)

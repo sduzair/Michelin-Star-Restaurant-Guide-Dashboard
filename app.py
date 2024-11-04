@@ -222,6 +222,7 @@ clientside_callback(
     Input("switch", "value"),
 )
 
+server = app.server
 
 if __name__ == "__main__":
     app.run()
